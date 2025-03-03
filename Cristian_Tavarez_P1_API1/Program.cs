@@ -1,24 +1,43 @@
 using Cristian_Tavarez_P1_API1.Components;
+using Microsoft.EntityFrameworkCore;
+using Cristian_Tavarez_P1_API1.Models;
+using Cristian_Tavarez_P1_API1.DAL;
+using Cristian_Tavarez_P1_API1.Services; 
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Obtener cadena de conexión
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+// Registrar DbContext
+builder.Services.AddDbContext<Contexto>(options =>
+    options.UseSqlServer(connectionString)
+);
+
+// Registrar servicios de Blazor
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
+builder.Services.AddDbContextFactory<Contexto>(options =>
+    options.UseSqlServer(connectionString)
+);
+
+builder.Services.AddScoped<AporteService>();
+
+builder.Services.AddRazorComponents()
+    .AddInteractiveServerComponents();
+
+// Construir la aplicación
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Configuración del pipeline HTTP
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
-
-
 app.UseAntiforgery();
 
 app.MapStaticAssets();
