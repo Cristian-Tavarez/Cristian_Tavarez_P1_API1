@@ -1,0 +1,81 @@
+﻿@page "/Aporte/create"
+@using Cristian_Tavarez_P1_API1.Services
+@using Cristian_Tavarez_P1_API1.Models
+@inject AporteService AporteService
+@inject NavigationManager navigationManager
+
+<PageTitle>Crear Aporte</PageTitle>
+
+<EditForm Model="aporte" OnValidSubmit="Guardar">
+    <DataAnnotationsValidator />
+
+    <div class="container">
+        <div class="card shadow-lg">
+            <div class="card-header text-center">
+                <h5 class="card-title">Crear Aporte <i class="bi bi-person-fill-gear"></i></h5>
+            </div>
+
+            <div class="card-body">
+                @* AporteId *@
+                <div class="mb-3">
+                    <label class="form-label"><strong>AporteId</strong></label>
+                    <InputNumber class="form-control" @bind-Value="aporte.AporteId" readonly />
+                </div>
+
+                @* Concepto *@
+                <div class="mb-3">
+                    <label class="form-label"><strong>Concepto</strong></label>
+                    <InputText class="form-control" @bind-Value="aporte.Observacion" />
+                    <ValidationMessage For="@(() => aporte.Observacion)" />
+                </div>
+
+                @* Fecha *@
+                <div class="mb-3">
+                    <label class="form-label"><strong>Fecha</strong></label>
+                    <InputDate class="form-control" @bind-Value="aporte.Fecha" />
+                    <ValidationMessage For="@(() => aporte.Fecha)" />
+                </div>
+
+                @* Monto *@
+                <div class="mb-3">
+                    <label class="form-label"><strong>Monto</strong></label>
+                    <InputNumber class="form-control" @bind-Value="aporte.Monto" />
+                    <ValidationMessage For="@(() => aporte.Monto)" />
+                </div>
+            </div>
+
+            @* Footer *@
+            <div class="card-footer text-center mt-2">
+                <a href="/aporte" class="btn btn-secondary">
+                    <span class="bi bi-arrow-left"></span> Volver
+                </a>
+                <button type="submit" class="btn btn-primary bi bi-floppy"> Guardar</button>
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    private Aporte aporte { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        aporte.Fecha = DateTime.Now;
+
+        var datos = await AporteService.Buscar(1);
+    }
+
+    private async Task Guardar()
+    {
+        var result = await AporteService.Guardar(aporte);
+        if (result)
+        {
+            navigationManager.NavigateTo("/aporte");
+        }
+        else
+        {
+            Console.WriteLine("Error al guardar el aporte.");
+        }
+    }
+}
+
